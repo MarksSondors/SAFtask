@@ -4,19 +4,6 @@ import { ref, onMounted, computed } from 'vue'
 const data = ref([])
 const loading = ref(true)
 
-// sensors api
-//   "1048609": { // sensor ID
-//   "metrics": { // sensor metrics
-//   "1": { // metric ID (corresponds to metrics.json item ID)
-//   "t": 1565155052, // timestamp
-//   "v": 21.8 // value
-//   }
-//   },
-//   "name": "Sensor 1", // sensor name
-//   "type": 1, // sensor type (corresponds to sensorTypes.json)
-//   "variant": 8 // sensor variant (corresponds to sensorTypes.json)
-//   },
-
 onMounted(async () => {
     const response = await fetch('http://localhost:8000/api/sensors/')
     const responseData = await response.json()
@@ -43,73 +30,6 @@ onMounted(async () => {
     sensorTypes.value = responseData
     sensorTypesLoading.value = false
 })
-
-
-
-// Required columns in the table:
-// Sensor name from the sensors api call
-// Columns of metric values. Column name metric name + active unit name from metric api and value is
-// measurement value from sensor api
-// It should be possible to sort records in ascending or descending order, by any column
-// Must have a search input field to search for entries in the table by sensor name
-// It should be possible to filter table entries by sensor type name
-// It should be possible to show/disable the display of certain metric value columns
-// The sensor may not have the correct name, the sensor type information in the sensorTypes api may be missing, etc. Handling of such cases will be evaluated
-// in the program code
-
-// sensors api
-//   "1048609": { // sensor ID
-//   "metrics": { // sensor metrics
-//   "1": { // metric ID (corresponds to metrics.json item ID)
-//   "t": 1565155052, // timestamp
-//   "v": 21.8 // value
-//   }
-//   },
-//   "name": "Sensor 1", // sensor name
-//   "type": 1, // sensor type (corresponds to sensorTypes.json)
-//   "variant": 8 // sensor variant (corresponds to sensorTypes.json)
-//   },
-
-// metrics api
-//{
-//   "data":{
-//   "lang":"en",
-//   "currentItemCount":1,
-//   "items":[ // metrics list
-//   {
-//       "id":"1", // metrics ID
-//       "name":"Temperature", // metrics name
-//       "units":[ // metrics units of measurement
-//           {
-//               "id":"1", // measurement unit ID
-//               "name":"°C", // measurement unit name
-//               "precision":2,
-//               "selected":true // default measurement unit
-//           },
-//   {
-//   "id":"101",
-//   "name":"°F",
-//   "precision":2
-//   },
-//   {
-//   "id":"102",
-//   "name":"K",
-//   "precision":2
-//}
-//]
-//}
-//]
-//}
-//}
-
-// sensorTypes api
-//{
-//    "1":{ // sensor type
-//    "8":{ // sensor variant
-//    "name":"T/RH Sensor" // sensor type name
-//    }
-//    }
-//}
 
 // search
 const search = ref('')
@@ -156,7 +76,6 @@ const handleSort = (column) => {
 const selectedSensorType = ref(null)
 const filteredByType = computed(() => {
     if (selectedSensorType.value) {
-        // given an id for sensor type id get from the sensorType its type and variant
         const type = sensorTypes.value.find((sensorType) => sensorType.id === selectedSensorType.value)?.type;
         const variant = sensorTypes.value.find((sensorType) => sensorType.id === selectedSensorType.value)?.variant;
         return sortedData.value.filter((item) => {
@@ -177,7 +96,6 @@ const handleToggleColumns = computed(() => {
         } else {
             metricColumn.style.display = 'none';
         }
-        // remove the values from the rows that are not displayed in the table
         const rows = document.querySelectorAll('tbody tr');
         rows.forEach((row) => {
             const value = row.querySelector(`[value="${metric.id}"]`);
